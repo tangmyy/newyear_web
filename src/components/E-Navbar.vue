@@ -13,6 +13,26 @@
         <b-navbar-item> 首页 </b-navbar-item>
       </router-link>
 
+      <router-link class="new" to="/Home">
+        <b-navbar-item> 个人相册 </b-navbar-item>
+      </router-link>
+
+      <router-link class="new" to="/Home">
+        <b-navbar-item> 收藏 </b-navbar-item>
+      </router-link>
+
+      <router-link class="new" to="/Wishlist">
+        <b-navbar-item> 愿望单 </b-navbar-item>
+      </router-link>
+
+      <router-link class="new" to="/Orders">
+        <b-navbar-item> 订单 </b-navbar-item>
+      </router-link>
+
+      <router-link class="new" to="/User">
+        <b-navbar-item> 我的 </b-navbar-item>
+      </router-link>
+
       <b-navbar-dropdown label="其他">
         <router-link class="new" to="/BigModel">
           <b-navbar-item> 星火认知大模型 </b-navbar-item>
@@ -35,7 +55,9 @@
 
           <div v-if="isLoggedIn" class="user-section">
             <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
-            <el-button type="success" plain>{{ UserID }}：欢迎您！👏</el-button>
+            <el-button type="success" plain>
+              <router-link to="/UserCenter">{{ UserID }}：欢迎您！👏</router-link>
+            </el-button>
             <el-button type="warning" @click="Logout" plain>退出登录</el-button>
           </div>
         </div>

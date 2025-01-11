@@ -18,6 +18,8 @@ import 'buefy/dist/buefy.css'
 Vue.use(Buefy)
 import 'animate.css';
 
+import "@fortawesome/fontawesome-free/css/all.css";
+
 import VueKinesis from 'vue-kinesis'
 Vue.use(VueKinesis);
 

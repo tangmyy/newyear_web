@@ -4,5 +4,96 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
+  // this.store.state.'xxx' 状态
+  state: {
+    UserID: '未登录',
+    isLoggedIn: false,
+    HTTP: 'http://localhost:8088',
+
+
+    dropFiles: [], // 拖放上传的文件数组
+    isPublic: 'PRIVATE', // 图像公开状态 默认为私密
+    description: '',      // 图片描述
+    texts: [],    // 标签数组
+    price: 0.00,
+  },
+
+  // this.$store.commit('xxx') 提交
+  mutations: {
+    login(state, username) {
+      state.isLoggedIn = true;
+      state.UserID = username;
+    },
+    logout(state) {
+      state.isLoggedIn = false;
+      state.UserID = '';
+    },
+
+    setPublicImages(state, images) {
+      state.PublicImages = images;
+    },
+    updateDropFiles(state, files) {
+      state.dropFiles = files;
+      console.log('Files update:', state.dropFiles);
+    },
+    deleteDropFile(state, index) {
+      state.dropFiles.splice(index, 1);
+      console.log('Files delete:', state.dropFiles);
+    },
+    updateDescription(state, description) {
+      state.description = description;
+      console.log('value update:', state.description);
+    },
+    updateIsPublic(state, isPublic) {
+      state.isPublic = isPublic;
+      console.log('value public:', state.isPublic);
+
+    },
+    updateTags(state, texts) {
+      console.log('value texts:', state.texts);
+      state.texts = texts;
+    }
+
+  },
+
+  //    
+  /**
+   * 获取状态(state)的派生状态(过滤/计数)
+   * 注意，getter 在通过属性访问时
+   * 是作为 Vue 的响应式系统的一部分缓存其中的
+   **/
+  getters: {
+    // count: state => state.count,
+    // doneTodos: state => {
+    //   // filter创建一个新数组，其包含通过所提供函数实现的测试的所有元素,它不会改变原数组
+    //   return state.todos.filter(todo => todo.done)
+    // },
+    // doneTodosCount:(state, getters) =>{
+    //   return getters.doneTodos.length
+    // }
+  },
+  /**
+   * 派发异步操作的逻辑
+   * 不做修改，修改只在mutations实现
+   **/
+  actions: {
+    // fetchPublicImages({ commit }) {
+    //   // 不可以使用 this.$http.get("/images/public")
+    //   return axios.get("http://localhost:8088/api/images/public")
+    //   .then((response) => {
+    //     commit('setPublicImages', response.data);
+    //   }).catch((error) => {
+    //     console.error("Error fetching images:", error);
+    //   });
+    // },
+  },
+  /**
+   * 可分模块
+   **/
+  modules: {
+    // 可分模块
+  }
 
 })
+
+
