@@ -1,5 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+// 为什么这里也要导入 main.js不是全局的吗？
+import axios from 'axios'
+axios.defaults.baseURL = "http://localhost:8088/api"
+Vue.prototype.$http = axios
 
 Vue.use(Vuex)
 
@@ -10,6 +14,7 @@ export default new Vuex.Store({
     isLoggedIn: false,
     HTTP: 'http://localhost:8088',
 
+    PublicImages: [],
 
     dropFiles: [], // 拖放上传的文件数组
     isPublic: 'PRIVATE', // 图像公开状态 默认为私密
@@ -77,15 +82,15 @@ export default new Vuex.Store({
    * 不做修改，修改只在mutations实现
    **/
   actions: {
-    // fetchPublicImages({ commit }) {
-    //   // 不可以使用 this.$http.get("/images/public")
-    //   return axios.get("http://localhost:8088/api/images/public")
-    //   .then((response) => {
-    //     commit('setPublicImages', response.data);
-    //   }).catch((error) => {
-    //     console.error("Error fetching images:", error);
-    //   });
-    // },
+    fetchPublicImages({ commit }) {
+      // 不可以使用 this.$http.get("/images/public")
+      return axios.get("http://localhost:8088/api/images/public")
+      .then((response) => {
+        commit('setPublicImages', response.data);
+      }).catch((error) => {
+        console.error("Error fetching images:", error);
+      });
+    },
   },
   /**
    * 可分模块

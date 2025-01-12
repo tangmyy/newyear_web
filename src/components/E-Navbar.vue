@@ -13,11 +13,15 @@
         <b-navbar-item> 首页 </b-navbar-item>
       </router-link>
 
-      <router-link class="new" to="/Home">
+      <router-link class="new" to="/PublicImage">
+        <b-navbar-item> 公共相册 </b-navbar-item>
+      </router-link>
+
+      <router-link class="new" to="/PrivateImage">
         <b-navbar-item> 个人相册 </b-navbar-item>
       </router-link>
 
-      <router-link class="new" to="/Home">
+      <router-link class="new" to="/Collect">
         <b-navbar-item> 收藏 </b-navbar-item>
       </router-link>
 

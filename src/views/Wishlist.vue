@@ -4,41 +4,48 @@
     <b-navbar type="is-primary">
       <b-navbar-brand>
         <b-navbar-item>
-          <h1 class="title has-text-white">我的收藏</h1>
+          <h1 class="title has-text-white">订单</h1>
         </b-navbar-item>
       </b-navbar-brand>
     </b-navbar>
 
-    <!-- 收藏内容 -->
+    <!-- 订单内容 -->
     <section class="section">
       <div class="container">
-        <!-- 空收藏提示 -->
-        <div v-if="wishlist.length === 0" class="notification is-info has-text-centered">
-          <p>还没有收藏任何内容，快去添加吧！</p>
+        <!-- 空订单提示 -->
+        <div v-if="orders.length === 0" class="notification is-info has-text-centered">
+          <p>暂无订单记录，快去选购心仪的图片吧！</p>
         </div>
 
         <!-- 表格 -->
         <div v-else>
+          <!-- 全选功能 -->
+          <div class="select-all mb-3">
+            <b-checkbox v-model="isAllSelected" @input="toggleSelectAll">
+              全选
+            </b-checkbox>
+          </div>
+
           <b-table
-            :data="paginatedWishlist"
+            :data="paginatedOrders"
             :hoverable="true"
             :striped="true"
             :bordered="true"
             class="is-fullwidth"
           >
-            <!-- 收藏编号 -->
-            <b-table-column field="wishlistId" label="收藏编号" v-slot="props">
-              {{ props.row.wishlistId }}
+            <!-- 选择框 -->
+            <b-table-column field="selected" label="选择" v-slot="props" width="40" centered>
+              <b-checkbox v-model="selectedItems" :native-value="props.row.wishlistId"></b-checkbox>
             </b-table-column>
 
             <!-- 图片预览 -->
-            <b-table-column field="thumbnail" label="图片预览" v-slot="props">
+            <b-table-column field="thumbnail" label="图片预览" v-slot="props" centered>
               <div class="image-container">
                 <figure class="image is-64x64">
                   <img
                     :src="props.row.thumbnail"
                     alt="图片预览"
-                    @click="viewImageDetails(props.row.imageId)"
+                    @click="viewDetails(props.row.imageId)"
                     style="cursor: pointer"
                   />
                 </figure>
@@ -46,52 +53,49 @@
               </div>
             </b-table-column>
 
-            <!-- 描述 -->
-            <b-table-column field="description" label="描述" v-slot="props">
+            <!-- 图片描述 -->
+            <b-table-column field="description" label="图片描述" v-slot="props">
               {{ props.row.description }}
             </b-table-column>
 
-            <!-- 收藏时间 -->
-            <b-table-column field="addTime" label="收藏时间" v-slot="props">
-              {{ props.row.addTime }}
+            <!-- 单价 -->
+            <b-table-column field="price" label="单价" v-slot="props" centered>
+              ¥{{ props.row.price.toFixed(2) }}
+            </b-table-column>
+
+            <!-- 小计 -->
+            <b-table-column field="subtotal" label="小计" v-slot="props" centered>
+              ¥{{ props.row.price.toFixed(2) }}
             </b-table-column>
 
             <!-- 操作 -->
-            <b-table-column label="操作" v-slot="props">
+            <b-table-column label="操作" v-slot="props" centered>
               <button
                 class="button is-danger is-small"
-                @click="confirmRemoveItem(props.row.wishlistId)"
+                @click="removeItem(props.row.wishlistId)"
               >
-                取消收藏
+                删除
               </button>
             </b-table-column>
           </b-table>
 
-          <!-- 分页控件 -->
-          <div class="pagination-wrapper">
-            <b-pagination
-              :total="wishlist.length"
-              :current.sync="currentPage"
-              :per-page="perPage"
-              :simple="true"
-              aria-next-label="下一页"
-              aria-previous-label="上一页"
-              class="mt-4"
-            >
-              <template #previous="props">
-                <button class="pagination-previous" :disabled="props.disabled">上一页</button>
-              </template>
-              <template #next="props">
-                <button class="pagination-next" :disabled="props.disabled">下一页</button>
-              </template>
-            </b-pagination>
-          </div>
-
-          <!-- 统计信息 -->
-          <div class="box">
+          <!-- 底部结算栏 -->
+          <div class="cart-footer box">
             <div class="columns is-vcentered">
               <div class="column">
-                收藏总数：<span>{{ totalItems }}</span>
+                已选择 <span class="has-text-primary">{{ selectedItems.length }}</span> 张图片
+              </div>
+              <div class="column">
+                总计：<span class="has-text-danger price-total">¥{{ getSelectedTotal().toFixed(2) }}</span>
+              </div>
+              <div class="column has-text-right">
+                <button 
+                  class="button is-primary" 
+                  @click="checkout"
+                  :disabled="selectedItems.length === 0"
+                >
+                  支付
+                </button>
               </div>
             </div>
           </div>
@@ -110,37 +114,40 @@
 
 <script>
 export default {
-  name: "WishlistPage",
+  name: "OrdersPage",
   data() {
     return {
-      wishlist: [], // 全部愿望单数据
-      currentPage: 1, // 当前页码
-      perPage: 5, // 每页显示的数据条数
+      orders: [], // 订单数据
+      currentPage: 1,
+      perPage: 5,
+      selectedItems: [], // 选中的订单ID数组
+      isAllSelected: false,
     };
   },
   computed: {
-    // 总数统计
-    totalItems() {
-      return this.wishlist.length;
+    // 订单总数
+    totalOrders() {
+      return this.orders.length;
     },
-    // 总价统计
-    totalPrice() {
-      return this.wishlist.reduce((sum, item) => sum + item.price, 0);
+    // 总金额统计
+    totalAmount() {
+      return this.orders.reduce((sum, order) => sum + order.total_amount, 0);
     },
     // 当前页显示的数据
-    paginatedWishlist() {
+    paginatedOrders() {
       const start = (this.currentPage - 1) * this.perPage;
       const end = start + this.perPage;
-      return this.wishlist.slice(start, end);
+      return this.orders.slice(start, end);
     },
   },
   mounted() {
-    this.fetchWishlist(); // 这里是否正确触发
+    this.fetchOrders();
   },
   methods: {
-    // 模拟从后端 API 获取愿望单数据
-    fetchWishlist() {
-      this.wishlist = [
+    // 获取订单数据
+    fetchOrders() {
+      // 模拟数据
+      this.orders = [
         {
           wishlistId: 1,
           imageId: 101,
@@ -164,101 +171,77 @@ export default {
           description: "当危险来临时，它将制造出整个银河系中最强大的武装力量",
           addTime: "2025-01-09 16:00",
           price: 15.99,
-        },
+        }
       ];
     },
-    // 查看图片详情
-    viewImageDetails(imageId) {
-      alert(`跳转到图片详情页面，图片 ID: ${imageId}`);
-      this.$router.push(`/image/${imageId}`);
+    // 格式化时间
+    formatTime(timestamp) {
+      return timestamp;  // 实际项目中可以使用 moment.js 等库来格式化
     },
-    // 确认并移除愿望单中的项目
-    confirmRemoveItem(wishlistId) {
-      if (confirm(`确定要移除愿望单编号为 ${wishlistId} 的项目吗？`)) {
-        this.removeItem(wishlistId);
+    // 移除商品
+    removeItem(orderId) {
+      if (confirm('确定要从购物车中移除这件商品吗？')) {
+        this.orders = this.orders.filter(item => item.wishlistId !== orderId);
+        this.selectedItems = this.selectedItems.filter(id => id !== orderId);
       }
     },
-    // 从愿望单中移除项
-    removeItem(wishlistId) {
-      this.wishlist = this.wishlist.filter((item) => item.wishlistId !== wishlistId);
-      alert(`已移除愿望单编号为 ${wishlistId} 的项目`);
+    // 全选/取消全选
+    toggleSelectAll(value) {
+      if (value) {
+        this.selectedItems = this.orders.map(item => item.wishlistId);
+      } else {
+        this.selectedItems = [];
+      }
+    },
+    // 计算选中订单的总价
+    getSelectedTotal() {
+      return this.orders
+        .filter(item => this.selectedItems.includes(item.wishlistId))
+        .reduce((sum, item) => sum + item.price, 0);
+    },
+    // 结算
+    checkout() {
+      if (this.selectedItems.length === 0) {
+        alert('请先选择订单');
+        return;
+      }
+      alert(`结算金额：¥${this.getSelectedTotal().toFixed(2)}`);
+    },
+    // 查看订单详情
+    viewDetails(orderId) {
+      this.$router.push(`/image/${orderId}`);
     },
     // 返回首页
     goToHome() {
       this.$router.push("/");
     },
-    // 模拟购买功能
-    purchaseWishlist() {
-      alert(`成功购买 ${this.totalItems} 件商品，总价为 ¥${this.totalPrice.toFixed(2)}`);
-    },
   },
+  watch: {
+    // 监听选中项变化，更新全选状态
+    selectedItems(newVal) {
+      this.isAllSelected = newVal.length === this.orders.length;
+    }
+  }
 };
 </script>
 
 <style>
-/* 导航栏样式 */
-.navbar.is-primary {
-  background-color: #6b4fbb !important;
-  padding: 1rem !important;
-  margin-bottom: 1rem !important;
-}
-
-/* 表格样式 */
-.b-table {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-}
-
-.b-table th {
-  background: #f8fafc !important;
-  font-weight: 600;
-  color: #6b4fbb;
-}
-
-/* 按钮样式 */
-.button.is-danger.is-small {
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-.button.is-danger.is-small:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* 统计框样式 */
-.box {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.box span {
-  color: #6366f1;
-  font-weight: 600;
-}
-
-/* 分页控件样式 */
-.pagination-wrapper {
-  margin: 1rem 0;
-  display: flex;
-  justify-content: center;
-}
-
 /* 图片容器和预览样式 */
 .image-container {
   position: relative;
-  width: 64px;
-  height: 64px;
+  display: inline-block;
 }
 
+/* 修改图片容器样式 */
 .image.is-64x64 {
+  width: 64px !important;
+  height: 64px !important;
+  display: block !important;
   border-radius: 8px;
   overflow: hidden;
-  width: 100%;
-  height: 100%;
 }
 
+/* 修改图片样式 */
 .image.is-64x64 img {
   width: 100% !important;
   height: 100% !important;
@@ -286,8 +269,67 @@ export default {
   padding: 10px;
 }
 
+/* 预览窗口在表格底部行时的位置调整 */
+tr:last-child .image-preview {
+  top: auto;
+  bottom: -120px;
+}
+
+/* 预览窗口在表格右侧时的位置调整 */
+tr td:last-child .image-preview {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
 .image-container:hover .image-preview {
   display: block;
+}
+
+/* 底部结算栏样式 */
+.cart-footer {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border-top: 2px solid #f5f5f5;
+  padding: 1rem;
+  border-color: rgba(107, 79, 187, 0.1);
+}
+
+.price-total {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #6b4fbb;
+}
+
+/* 表格样式优化 */
+.b-table {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+}
+
+/* 选择框样式 */
+.select-all {
+  padding: 0.5rem 0;
+}
+
+/* 按钮样式 */
+.button.is-primary {
+  transition: all 0.2s ease;
+  background-color: #6b4fbb;
+}
+
+.button.is-primary:hover:not([disabled]) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+/* 导航栏样式 */
+.navbar.is-primary {
+  background-color: #6b4fbb !important;
+  padding: 1rem !important;
+  margin-bottom: 1rem !important;
 }
 
 /* 按钮样式 */
@@ -300,10 +342,29 @@ export default {
   background-color: #563d9f;
 }
 
-/* 分页样式 */
-.pagination-link.is-current {
-  background-color: #6b4fbb;
-  border-color: #6b4fbb;
-  color: #fff;
+/* 表格样式 */
+.b-table th {
+  background: #f8fafc !important;
+  font-weight: 600;
+  color: #6b4fbb;
+}
+
+/* 价格和总计样式 */
+.price-total {
+  color: #6b4fbb;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* 购物车底部样式 */
+.cart-footer {
+  border-top: 2px solid #f5f5f5;
+  padding: 1rem;
+  border-color: rgba(107, 79, 187, 0.1);
+}
+
+/* 选中项文本样式 */
+.has-text-primary {
+  color: #6b4fbb !important;
 }
 </style>

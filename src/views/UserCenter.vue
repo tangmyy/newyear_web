@@ -86,7 +86,7 @@ export default {
       mobile: "reduce", // 自定义移动端布局:fullwidth, reduce, hide
       expandOnHover: true, // 悬停展开
       expandWithDelay: false, // 延迟悬停展开
-      activeMenu: "", // 默认为空，或者设置为默认展示的内容
+      activeMenu: "Info", // 默认为空，或者设置为默认展示的内容
     };
   },
 };
