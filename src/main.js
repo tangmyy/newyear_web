@@ -18,8 +18,6 @@ import 'buefy/dist/buefy.css'
 Vue.use(Buefy)
 import 'animate.css';
 
-import "@fortawesome/fontawesome-free/css/all.css";
-
 import VueKinesis from 'vue-kinesis'
 Vue.use(VueKinesis);
 
@@ -27,9 +25,8 @@ import { VueMasonryPlugin } from 'vue-masonry';
 Vue.use(VueMasonryPlugin);
 
 Vue.config.productionTip = false
-
 new Vue({
+  render: h => h(App),
   router,
   store,
-  render: h => h(App)
 }).$mount('#app')

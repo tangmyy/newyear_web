@@ -13,24 +13,20 @@
         <b-navbar-item> 首页 </b-navbar-item>
       </router-link>
 
-      <router-link class="new" to="/Home">
+      <router-link class="new" to="/PublicImage">
+        <b-navbar-item> 公共相册 </b-navbar-item>
+      </router-link>
+
+      <router-link class="new" to="/PrivateImage">
         <b-navbar-item> 个人相册 </b-navbar-item>
       </router-link>
 
-      <router-link class="new" to="/Home">
-        <b-navbar-item> 收藏 </b-navbar-item>
+      <router-link class="new" to="/Collect">
+        <b-navbar-item> 收藏夹 </b-navbar-item>
       </router-link>
 
       <router-link class="new" to="/Wishlist">
         <b-navbar-item> 愿望单 </b-navbar-item>
-      </router-link>
-
-      <router-link class="new" to="/Orders">
-        <b-navbar-item> 订单 </b-navbar-item>
-      </router-link>
-
-      <router-link class="new" to="/User">
-        <b-navbar-item> 我的 </b-navbar-item>
       </router-link>
 
       <b-navbar-dropdown label="其他">
@@ -55,9 +51,9 @@
 
           <div v-if="isLoggedIn" class="user-section">
             <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
-            <el-button type="success" plain>
-              <router-link to="/UserCenter">{{ UserID }}：欢迎您！👏</router-link>
-            </el-button>
+            <router-link to="/UserCenter">
+              <el-button type="success" plain> {{ UserID }}：欢迎您！👏 </el-button>
+            </router-link>
             <el-button type="warning" @click="Logout" plain>退出登录</el-button>
           </div>
         </div>
@@ -107,11 +103,16 @@ export default {
   display: flex;
   align-items: center; /* 垂直居中 */
   justify-content: center; /* 水平居中，可选 */
-}
-.user-section .el-avatar {
-  margin-right: 10px; /* 设置头像和按钮之间的间距 */
-  display: flex;
-  align-items: center; /* 垂直居中 */
-  justify-content: center; /* 水平居中，可选 */
+
+  .el-avatar {
+    margin-right: 10px; /* 设置头像和按钮之间的间距 */
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    justify-content: center; /* 水平居中，可选 */
+  }
+
+  .el-button {
+    margin: 0 8px; /* 为按钮设置左右间距 */
+  }
 }
 </style>
