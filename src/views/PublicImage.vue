@@ -22,7 +22,7 @@
           @mouseleave="hideInfo(index)"
           @click="openImageModal(image.imageurl)"
         >
-          <img alt="" :src="image.imageurl" @load="imageonload" />
+          <img alt="图片跑丢啦..." :src="image.imageurl" @load="imageonload(index)" />
 
           <div class="info-box" :class="{ 'show-info': image.showInfo }">
             <p>{{ image.description }}</p>
@@ -37,6 +37,17 @@
             </div>
           </div>
         </div>
+
+        <br />
+        <br />
+        <div class="block">
+          <span class="demonstration">评分</span>
+          <el-rate v-model="value" :colors="colors"> </el-rate>
+        </div>
+        <el-button size="small" icon="el-icon-warning-outline" class="" type="danger" round>举报</el-button>
+        <el-button size="mini" round
+          ><i class="layui-icon layui-icon-praise" style="font-size: 15px; color: #1e9fff"></i
+        ></el-button>
       </div>
     </div>
 
@@ -60,6 +71,10 @@ export default {
       isLoading: false,
       imageModalVisible: false,
       currentImageUrl: "",
+
+      //
+      value: null,
+      colors: ["#99A9BF", "#F7BA2A", "#FF9900"], // 等同于 { 2: '#99A9BF', 4: { value: '#F7BA2A', excluded: true }, 5: '#FF9900' }
     };
   },
   computed: {
@@ -88,11 +103,19 @@ export default {
       setPublicImages: "setPublicImages",
     }),
 
-    imageonload() {
+    imageonload(index) {
+      const img = new Image();
+      img.src = this.images[index].imageurl; // 使用当前图片的 URL
+      img.onload = () => {
+        console.log(`图片宽度: ${img.naturalWidth}px`);
+        console.log(`图片高度: ${img.naturalHeight}px`);
+        // 可以在这里对图片宽高进行处理，例如记录到某个数据结构中
+      };
+
       new PuBu({
         el: ".wf-content",
-        column: 4,
-        gap: 20,
+        column: 4, // 列数
+        gap: 20, // 间距
       });
     },
     updateImageUrls() {
@@ -177,12 +200,18 @@ export default {
 }
 /* 瀑布流项中的图片样式，设置图片的宽度和高度为100% */
 .wf-item img {
-  height: 100%;
-  width: 100%;
+  /* width: 100%;
+  height: 100%; */
+  width: 200px;
+  height: 200px;
+  object-fit: contain; /* 裁剪图片以填充框 */
+  border-radius: 8px; /* 圆角，可选 */
 }
+
 /* 容器样式，设置宽度为960px，并水平居中 */
 .container {
   width: 960px;
+  height: 960px;
   margin: 0 auto;
 }
 /* 图片容器样式，设置相对定位 */

@@ -12,7 +12,7 @@
       >
         <div class="p-1">
           <div class="block">
-            <img src="@/assets/logo.png" alt="Mirro的Logo" />
+            <img src="@/assets/mirro.png" alt="Mirro的Logo" />
           </div>
           <b-menu class="is-custom-mobile">
             <!-- 默认选中active expanded -->
@@ -25,15 +25,14 @@
                 label="信息"
               ></b-menu-item>
 
-              <b-menu-item icon="account" label="我的账户">
-                <b-menu-item icon="account-box" label="账户数据"></b-menu-item>
-                <b-menu-item icon="home-account" label="地址"></b-menu-item>
-              </b-menu-item>
-
               <b-menu-item icon="cash-multiple" label="钱包">
-                <b-menu-item icon="account" label="全部订单"></b-menu-item>
                 <b-menu-item icon="cellphone-link" label="余额"></b-menu-item>
                 <b-menu-item icon="cash-multiple" label="充值" disabled></b-menu-item>
+              </b-menu-item>
+
+              <b-menu-item icon="account" label="全部订单">
+                <b-menu-item icon="account-box" label="账户数据"></b-menu-item>
+                <b-menu-item icon="home-account" label="地址"></b-menu-item>
               </b-menu-item>
             </b-menu-list>
 
@@ -43,15 +42,6 @@
 
             <b-menu-list label="操作">
               <b-menu-item @click="activeMenu = 'Complaint'" label="投诉" icon="link"></b-menu-item>
-              <b-menu-item icon="logout" label=" "></b-menu-item>
-              <b-menu-item icon="logout" label=" "></b-menu-item>
-              <b-menu-item icon="logout" label=" "></b-menu-item>
-              <b-menu-item icon="logout" label=" "></b-menu-item>
-              <b-menu-item icon="logout" label=" "></b-menu-item>
-              <b-menu-item icon="logout" label=" "></b-menu-item>
-              <b-menu-item icon="logout" label=" "></b-menu-item>
-              <b-menu-item icon="logout" label=" "></b-menu-item>
-              <b-menu-item icon="logout" label=" "></b-menu-item>
             </b-menu-list>
           </b-menu>
         </div>
@@ -82,7 +72,7 @@ export default {
   data() {
     return {
       // 侧边栏参数
-      reduce: false, // 自动缩放
+      reduce: true, // 自动缩放
       mobile: "reduce", // 自定义移动端布局:fullwidth, reduce, hide
       expandOnHover: true, // 悬停展开
       expandWithDelay: false, // 延迟悬停展开
@@ -107,6 +97,16 @@ export default {
 }
 
 // 侧边栏样式
+
+.b-sidebar {
+  display: flex; // 使用 flexbox 布局
+  flex-direction: column; // 子元素垂直排列
+  justify-content: center; // 垂直方向居中（主轴）
+  align-items: center; // 水平方向居中（交叉轴）
+  height: 100%; // 让侧边栏的高度占满父容器
+  padding: 1em; // 可选，增加内边距
+}
+
 .p-1 {
   padding: 1em; // 添加 1em 的内边距
 }
@@ -114,7 +114,7 @@ export default {
   display: flex; // 启用 Flexbox 布局，方便子元素的排列
   flex-direction: column; // 设置主轴方向为垂直方向（从上到下排列子元素）
   width: 100%; // 设置容器的宽度占据父容器的 100%
-  // min-height: 100%; // 设置容器的最小高度为父容器的高度
+  // min-height: 100%;    // 设置容器的最小高度为父容器的高度
   min-height: 100vh; // （可选）将最小高度设置为视窗高度，保证填满屏幕
 
   .sidebar-layout {
@@ -124,6 +124,7 @@ export default {
     // min-height: 100vh; // （可选）将最小高度设置为视窗高度，保证填满屏幕
   }
 }
+
 @media screen and (max-width: 1023px) {
   .b-sidebar {
     .sidebar-content {

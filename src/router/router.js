@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import store from '@/store/store'
+import store from '@/store/store'     // 配合路由守卫
 
 
 import Home from '../views/Home.vue'
@@ -33,10 +33,10 @@ const router = new VueRouter({
     // children:子路由
     {
       path: '/',
-      redirect: '/home'
+      redirect: '/Home'
     },
     {
-      path: '/home',
+      path: '/Home',
       name: 'home',
       component: Home,
     },
@@ -65,6 +65,7 @@ const router = new VueRouter({
       path: '/Collect',
       name: 'Collect',
       component: Collect,
+      meta: { requiresAuth: true }
     },
     {
       path: '/Wishlist',

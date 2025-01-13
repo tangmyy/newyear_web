@@ -3,7 +3,7 @@
     <el-card class="register-card">
       <h2 class="register-title">登录</h2>
 
-      <el-form :model="form" :rules="rules" ref="form" label-width="100px">
+      <el-form :model="form" :rules="rules" ref="form" label-width="100px" @keydown.enter.native="submitForm('form')">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="form.username"></el-input>
         </el-form-item>
