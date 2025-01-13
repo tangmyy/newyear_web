@@ -59,7 +59,7 @@
 
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
-import { PuBu } from "@/components/JS/PuBu";
+import PuBu from "@/components/PuBu";
 
 export default {
   name: "PublicImage",

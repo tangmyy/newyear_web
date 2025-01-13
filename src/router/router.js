@@ -12,9 +12,9 @@ import UserCenter from '../views/UserCenter.vue'
 import UPimage from '../views/Image/UPimage.vue'
 
 import PublicImage from '../views/PublicImage.vue'
-import PrivateImage from '../views/PrivateImage.vue'
+// import PrivateImage from '../views/PrivateImage.vue'
 
-import Collect from '../views/Collect.vue'
+// import Collect from '../views/Collect.vue'
 import Wishlist from '../views/Wishlist.vue'
 import Orders from '../views/Orders.vue'
 
