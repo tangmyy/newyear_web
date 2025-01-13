@@ -180,6 +180,7 @@ export default {
         }
       } catch (error) {
         console.error("搜索失败:", error);
+        alert("暂未登录!搜索失败!");
         this.isLoading = false;
       }
     },

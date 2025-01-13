@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="tableData" style="width: 90%">
+  <el-table :data="tableData" style="width: 100%">
     <el-table-column prop="imageurl" label="图片" width="300">
       <template v-slot="scope">
         <img :src="scope.row.imageurl" alt="image" style="width: 100px; height: auto" />
@@ -13,7 +13,7 @@
       </template>
     </el-table-column>
 
-    <el-table-column prop="id" label="ID"></el-table-column>
+    <el-table-column prop="imageId" label="ID"></el-table-column>
     <el-table-column prop="tags" label="标签"></el-table-column>
     <el-table-column prop="description" label="图片描述"></el-table-column>
 
@@ -26,7 +26,7 @@
         <el-dialog :visible.sync="dialogFormVisible">
           <el-form :model="form">
             <el-form-item label="图片ID" :label-width="formLabelWidth">
-              <p>图片ID: {{ scope.row.imageId }}</p>
+              <p>: {{ scope.row.imageId }}</p>
             </el-form-item>
 
             <el-form-item label="图片描述" :label-width="formLabelWidth">
@@ -124,7 +124,7 @@ export default {
         // const parsedTagsJson = JSON.parse(tagsJson);
         console.log("即将发送给后端的 tags:", tagsJson);
         console.log("表单数据:", {
-          id: parseInt(this.form.id),
+          imageId: parseInt(this.form.imageId),
           description: this.form.description,
           tags: tagsJson,
           isPublic: this.form.isPublic,
@@ -132,7 +132,7 @@ export default {
         const response = await this.$http.put(
           "/images",
           {
-            id: parseInt(this.form.id), // 确保 id 是整数
+            imageId: parseInt(this.form.imageId), // 确保 id 是整数
             description: this.form.description,
             tags: tagsJson,
             isPublic: this.form.isPublic,
