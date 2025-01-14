@@ -9,9 +9,9 @@
     </template>
 
     <template #start>
-      <router-link class="new" to="/Home">
+      <!-- <router-link class="new" to="/Home">
         <b-navbar-item> 首页 </b-navbar-item>
-      </router-link>
+      </router-link> -->
 
       <router-link class="new" to="/PublicImage">
         <b-navbar-item> 公共相册 </b-navbar-item>
@@ -52,7 +52,7 @@
           <div v-if="isLoggedIn" class="user-section">
             <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
             <router-link to="/UserCenter">
-              <el-button type="success" plain> {{ UserID }}：欢迎您！👏 </el-button>
+              <el-button type="success" plain> {{ UserName }}：欢迎您！👏 </el-button>
             </router-link>
             <el-button type="warning" @click="Logout" plain>退出登录</el-button>
           </div>
@@ -66,6 +66,10 @@
 import { mapState, mapMutations } from "vuex";
 export default {
   name: "Navbar",
+
+  computed: {
+    ...mapState(["isLoggedIn", "UserName"]),
+  },
 
   // 定义组件的方法
   methods: {
@@ -84,11 +88,6 @@ export default {
       // 跳转到登录页
       this.$router.push({ path: "/Login" });
     },
-  },
-
-  // 定义计算属性(具有缓存性)
-  computed: {
-    ...mapState(["isLoggedIn", "UserID"]),
   },
 };
 </script>

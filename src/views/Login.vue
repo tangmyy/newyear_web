@@ -25,6 +25,8 @@
 import { mapState, mapMutations } from "vuex";
 
 export default {
+  name: "Login",
+
   data() {
     return {
       form: {
@@ -40,7 +42,7 @@ export default {
 
   // 3. computed：定义计算属性(具有缓存性)
   computed: {
-    ...mapState(["isLoggedIn", "UserID"]),
+    ...mapState(["isLoggedIn", "UserName"]),
   },
 
   // 记得不要重复定义...
@@ -63,13 +65,14 @@ export default {
             })
             .then((response) => {
               // 登录成功处理
-              alert("登录成功!");
+              // 原来是你延迟跳转
+              // alert("登录成功!");
               setTimeout(() => {
                 this.login(this.form.username); // 传递用户名给 login 突变
-                console.log("跳转到 原 页面");
-                const routesSW = this.$route.query.redirect || { name: "Home" };
+                const routesSW = this.$route.query.redirect || { name: "PublicImage" };
                 this.$router.push(routesSW);
-              }, 500);
+                console.log("跳转到原页面:" + routesSW);
+              }, 100);
               // router 是 Vue Router 实例，包含整个应用的路由配置和控制路由导航的方法
 
               // 在控制台输出

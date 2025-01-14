@@ -17,6 +17,7 @@ import PrivateImage from '../views/PrivateImage.vue'
 import Collect from '../views/Collect.vue'
 import Wishlist from '../views/Wishlist.vue'
 import Orders from '../views/Orders.vue'
+import BigModel from '../views/BigModel.vue'
 
 
 Vue.use(VueRouter)
@@ -33,11 +34,11 @@ const router = new VueRouter({
     // children:子路由
     {
       path: '/',
-      redirect: '/Home'
+      redirect: '/PublicImage'
     },
     {
       path: '/Home',
-      name: 'home',
+      name: 'Home',
       component: Home,
     },
     {
@@ -77,6 +78,11 @@ const router = new VueRouter({
       path: '/Orders',
       name: 'Orders',
       component: Orders,
+    },
+    {
+      path: '/BigModel',
+      name: 'BigModel',
+      component: BigModel,
     },
 
     {

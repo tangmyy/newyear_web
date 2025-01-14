@@ -42,7 +42,7 @@
         <br />
         <div class="block">
           <span class="demonstration">评分</span>
-          <el-rate v-model="value" :colors="colors"> </el-rate>
+          <el-rate v-model="image.value" :colors="colors" @change="rateImage(image)"></el-rate>
         </div>
         <el-button size="small" icon="el-icon-warning-outline" class="" type="danger" round>举报</el-button>
         <el-button size="mini" round
@@ -73,7 +73,6 @@ export default {
       currentImageUrl: "",
 
       //
-      value: null,
       colors: ["#99A9BF", "#F7BA2A", "#FF9900"], // 等同于 { 2: '#99A9BF', 4: { value: '#F7BA2A', excluded: true }, 5: '#FF9900' }
     };
   },
@@ -82,7 +81,7 @@ export default {
   },
   created() {
     this.fetchPublicImages().then(() => {
-      this.updateImageUrls();
+      this.fetchImagesAndRatings();
     });
     // this.fetchTags()     是否需要 向/images/tags 请求获取标签 有待考证
   },
@@ -98,9 +97,10 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["fetchPublicImages"]),
+    ...mapActions(["fetchPublicImages", "fetchImageRatings"]),
     ...mapMutations({
       setPublicImages: "setPublicImages",
+      setImageRatings: "setImageRatings",
     }),
 
     imageonload(index) {
@@ -109,6 +109,7 @@ export default {
       img.onload = () => {
         console.log(`图片宽度: ${img.naturalWidth}px`);
         console.log(`图片高度: ${img.naturalHeight}px`);
+        console.log("当前图片的完整信息:", this.images[index]);
         // 可以在这里对图片宽高进行处理，例如记录到某个数据结构中
       };
 
@@ -118,13 +119,59 @@ export default {
         gap: 20, // 间距
       });
     },
+
+    fetchImagesAndRatings() {
+      // 首先加载图片
+      this.fetchPublicImages()
+        .then(() => {
+          // 然后加载评分
+          return this.fetchImageRatings();
+        })
+        .then(() => {
+          // 整合后更新组件数据
+          this.updateImageUrls();
+        })
+        .catch((error) => {
+          console.error("Error fetching images and ratings:", error);
+        });
+    },
     updateImageUrls() {
       this.images = this.PublicImages.map((image) => ({
         ...image,
         // imageurl: this.HTTP + image.url,
         imageurl: image.filePath,
         showInfo: false, // 新增属性用于控制信息框的显示
+        value: 0, // 初始化评分
       }));
+    },
+    rateImage(image) {
+      // 确保传递了 imageId 和评分值 value
+      if (!image.imageId || !image.value) {
+        this.$message.error("图片ID或评分值不能为空！");
+        return;
+      }
+      this.$http
+        .post(
+          "/likeimages/value",
+          {
+            imageId: image.imageId, // 图片的唯一 ID
+            value: image.value, // 用户评分的值
+          },
+          {
+            withCredentials: true, // 确保发送 Cookie，用于会话验证
+          },
+        )
+        .then(() => {
+          this.$message.success("评分提交成功！");
+        })
+        .catch((error) => {
+          console.error("评分提交失败：", error);
+          if (error.response && error.response.status === 401) {
+            this.$message.error("用户未登录，请先登录后评分！");
+          } else {
+            this.$message.error("评分提交失败，请稍后重试！");
+          }
+        });
     },
 
     showInfo(index) {
@@ -145,16 +192,6 @@ export default {
       event.stopPropagation(); // 阻止事件冒泡
       this.keyword = tag;
       this.searchImages();
-    },
-
-    // 向/images/tags 请求获取标签
-    async fetchTags() {
-      try {
-        const response = await this.$http.get("/images/tags");
-        this.tags = Array.isArray(response.data) ? response.data : [];
-      } catch (error) {
-        console.error("获取标签失败:", error);
-      }
     },
 
     async searchImages() {
@@ -184,6 +221,16 @@ export default {
         this.isLoading = false;
       }
     },
+
+    // 向/images/tags 请求获取标签
+    async fetchTags() {
+      try {
+        const response = await this.$http.get("/images/tags");
+        this.tags = Array.isArray(response.data) ? response.data : [];
+      } catch (error) {
+        console.error("获取标签失败:", error);
+      }
+    },
   },
 };
 </script>
@@ -201,10 +248,10 @@ export default {
 }
 /* 瀑布流项中的图片样式，设置图片的宽度和高度为100% */
 .wf-item img {
-  /* width: 100%;
-  height: 100%; */
-  width: 200px;
-  height: 200px;
+  width: 100%;
+  height: 100%;
+  /* width: 200px;
+  height: 300px; */
   object-fit: contain; /* 裁剪图片以填充框 */
   border-radius: 8px; /* 圆角，可选 */
 }

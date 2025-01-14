@@ -10,7 +10,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   // this.store.state.'xxx' 状态
   state: {
-    UserID: '未登录',
+    UserId: "",
+    UserName: '未登录',
     isLoggedIn: false,
     HTTP: 'http://localhost:8088',
 
@@ -27,16 +28,30 @@ export default new Vuex.Store({
   mutations: {
     login(state, username) {
       state.isLoggedIn = true;
-      state.UserID = username;
+      state.UserName = username;
     },
     logout(state) {
       state.isLoggedIn = false;
-      state.UserID = '';
+      state.UserName = '';
     },
-
+    setUserId(state, userId) {
+      state.UserId = userId;
+    },
+    
     setPublicImages(state, images) {
       state.PublicImages = images;
     },
+    setImageRatings(state, ratings) {
+      // 根据评分更新图片的 `value`
+      state.PublicImages = state.PublicImages.map((image) => {
+        const rating = ratings.find((r) => r.imageId === image.id);
+        return {
+          ...image,
+          value: rating ? rating.value : 0, // 如果评分不存在，默认值为 0
+        };
+      });
+    },
+
     updateDropFiles(state, files) {
       state.dropFiles = files;
       console.log('Files update:', state.dropFiles);
@@ -82,15 +97,26 @@ export default new Vuex.Store({
    * 不做修改，修改只在mutations实现
    **/
   actions: {
-    fetchPublicImages({ commit }) {
+    async fetchPublicImages({ commit }) {
       // 不可以使用 this.$http.get("/images/public")
-      return axios.get("http://localhost:8088/api/images/public")
-      .then((response) => {
-        commit('setPublicImages', response.data);
-      }).catch((error) => {
-        console.error("Error fetching images:", error);
-      });
+      try {
+        const response = await axios.get("http://localhost:8088/api/images/public")
+        commit('setPublicImages', response.data)
+      } catch (error) {
+        console.error("Error fetching images:", error)
+      }
     },
+    async fetchImageRatings({ commit }) {
+      return axios
+        .get("http://localhost:8088/api/likeimages/get", { withCredentials: true })
+        .then((response) => {
+          commit("setImageRatings", response.data); // 保存评分到 Vuex 中
+        })
+        .catch((error) => {
+          console.error("Error fetching image ratings:", error);
+        });
+    },
+    
   },
   /**
    * 可分模块

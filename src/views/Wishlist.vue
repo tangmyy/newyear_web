@@ -19,23 +19,15 @@
 
         <!-- 表格 -->
         <div v-else>
-          <!-- 全选功能 -->
-          <div class="select-all mb-3">
-            <b-checkbox v-model="isAllSelected" @input="toggleSelectAll">
-              全选
-            </b-checkbox>
-          </div>
-
-          <b-table
-            :data="paginatedOrders"
-            :hoverable="true"
-            :striped="true"
-            :bordered="true"
-            class="is-fullwidth"
-          >
-            <!-- 选择框 -->
-            <b-table-column field="selected" label="选择" v-slot="props" width="40" centered>
-              <b-checkbox v-model="selectedItems" :native-value="props.row.wishlistId"></b-checkbox>
+          <b-table :data="paginatedOrders" :hoverable="true" :striped="true" :bordered="true" class="is-fullwidth">
+            <!-- 全选列 -->
+            <b-table-column field="selected" label="" width="40" centered>
+              <template #header="{ column }">
+                <b-checkbox v-model="isAllSelected" @input="toggleSelectAll"> </b-checkbox>
+              </template>
+              <template #default="props">
+                <b-checkbox v-model="selectedItems" :native-value="props.row.wishlistId"></b-checkbox>
+              </template>
             </b-table-column>
 
             <!-- 图片预览 -->
@@ -70,12 +62,7 @@
 
             <!-- 操作 -->
             <b-table-column label="操作" v-slot="props" centered>
-              <button
-                class="button is-danger is-small"
-                @click="removeItem(props.row.wishlistId)"
-              >
-                删除
-              </button>
+              <button class="button is-danger is-small" @click="removeItem(props.row.wishlistId)">删除</button>
             </b-table-column>
           </b-table>
 
@@ -89,26 +76,13 @@
                 总计：<span class="has-text-danger price-total">¥{{ getSelectedTotal().toFixed(2) }}</span>
               </div>
               <div class="column has-text-right">
-                <button 
-                  class="button is-primary" 
-                  @click="checkout"
-                  :disabled="selectedItems.length === 0"
-                >
-                  支付
-                </button>
+                <button class="button is-primary" @click="checkout" :disabled="selectedItems.length === 0">支付</button>
               </div>
             </div>
           </div>
         </div>
       </div>
     </section>
-
-    <!-- 返回首页按钮 -->
-    <footer class="footer">
-      <div class="content has-text-centered">
-        <button class="button is-light" @click="goToHome">返回首页</button>
-      </div>
-    </footer>
   </div>
 </template>
 
@@ -171,24 +145,24 @@ export default {
           description: "当危险来临时，它将制造出整个银河系中最强大的武装力量",
           addTime: "2025-01-09 16:00",
           price: 15.99,
-        }
+        },
       ];
     },
     // 格式化时间
     formatTime(timestamp) {
-      return timestamp;  // 实际项目中可以使用 moment.js 等库来格式化
+      return timestamp; // 实际项目中可以使用 moment.js 等库来格式化
     },
     // 移除商品
     removeItem(orderId) {
-      if (confirm('确定要从购物车中移除这件商品吗？')) {
-        this.orders = this.orders.filter(item => item.wishlistId !== orderId);
-        this.selectedItems = this.selectedItems.filter(id => id !== orderId);
+      if (confirm("确定要从购物车中移除这件商品吗？")) {
+        this.orders = this.orders.filter((item) => item.wishlistId !== orderId);
+        this.selectedItems = this.selectedItems.filter((id) => id !== orderId);
       }
     },
     // 全选/取消全选
     toggleSelectAll(value) {
       if (value) {
-        this.selectedItems = this.orders.map(item => item.wishlistId);
+        this.selectedItems = this.orders.map((item) => item.wishlistId);
       } else {
         this.selectedItems = [];
       }
@@ -196,13 +170,13 @@ export default {
     // 计算选中订单的总价
     getSelectedTotal() {
       return this.orders
-        .filter(item => this.selectedItems.includes(item.wishlistId))
+        .filter((item) => this.selectedItems.includes(item.wishlistId))
         .reduce((sum, item) => sum + item.price, 0);
     },
     // 结算
     checkout() {
       if (this.selectedItems.length === 0) {
-        alert('请先选择订单');
+        alert("请先选择订单");
         return;
       }
       alert(`结算金额：¥${this.getSelectedTotal().toFixed(2)}`);
@@ -220,8 +194,8 @@ export default {
     // 监听选中项变化，更新全选状态
     selectedItems(newVal) {
       this.isAllSelected = newVal.length === this.orders.length;
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -327,9 +301,11 @@ tr td:last-child .image-preview {
 
 /* 导航栏样式 */
 .navbar.is-primary {
-  background-color: #6b4fbb !important;
+  background-color: #7b63bf !important;
   padding: 1rem !important;
   margin-bottom: 1rem !important;
+  z-index: 0 !important;
+  position: relative !important;
 }
 
 /* 按钮样式 */

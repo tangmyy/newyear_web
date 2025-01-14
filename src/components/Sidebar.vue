@@ -99,7 +99,7 @@ export default {
   flex: 1; // 让内容区域占据剩余空间
   padding: 20px; // 添加内边距
   background: #ffffff; // 设置背景色
-  border: 1px solid #ff0000; // （可选）用于调试的红色边框
+  // border: 10px solid #ff0000; // （可选）用于调试的红色边框
 }
 
 // 侧边栏样式

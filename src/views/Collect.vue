@@ -19,13 +19,7 @@
 
         <!-- 表格 -->
         <div v-else>
-          <b-table
-            :data="paginatedWishlist"
-            :hoverable="true"
-            :striped="true"
-            :bordered="true"
-            class="is-fullwidth"
-          >
+          <b-table :data="paginatedWishlist" :hoverable="true" :striped="true" :bordered="true" class="is-fullwidth">
             <!-- 收藏编号 -->
             <b-table-column field="wishlistId" label="收藏编号" v-slot="props">
               {{ props.row.wishlistId }}
@@ -58,14 +52,20 @@
 
             <!-- 操作 -->
             <b-table-column label="操作" v-slot="props">
-              <button
-                class="button is-danger is-small"
-                @click="confirmRemoveItem(props.row.wishlistId)"
-              >
+              <button class="button is-danger is-small" @click="confirmRemoveItem(props.row.wishlistId)">
                 取消收藏
               </button>
             </b-table-column>
           </b-table>
+
+          <!-- 统计信息 -->
+          <div class="box">
+            <div class="columns is-vcentered">
+              <div class="column">
+                收藏总数：<span>{{ totalItems }}</span>
+              </div>
+            </div>
+          </div>
 
           <!-- 分页控件 -->
           <div class="pagination-wrapper">
@@ -86,25 +86,9 @@
               </template>
             </b-pagination>
           </div>
-
-          <!-- 统计信息 -->
-          <div class="box">
-            <div class="columns is-vcentered">
-              <div class="column">
-                收藏总数：<span>{{ totalItems }}</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
-
-    <!-- 返回首页按钮 -->
-    <footer class="footer">
-      <div class="content has-text-centered">
-        <button class="button is-light" @click="goToHome">返回首页</button>
-      </div>
-    </footer>
   </div>
 </template>
 
